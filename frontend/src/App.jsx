@@ -8,6 +8,7 @@ import Dashboard from "./components/Dashboard";
 import Landing from "./components/Landing";
 import Contact from "./components/Contact";
 import Profile from "./components/Profile";
+import ProfileSetup from "./components/ProfileSetup";
 
 function App() {
   return (
@@ -17,6 +18,19 @@ function App() {
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/contact" element={<Contact />} />
+        <Route
+          path="/complete-profile"
+          element={
+            <>
+              <SignedIn>
+                <ProfileSetup />
+              </SignedIn>
+              <SignedOut>
+                <Navigate to="/" />
+              </SignedOut>
+            </>
+          }
+        />
 
         {/* Home Route - Landing when signed out, Dashboard when signed in */}
         <Route

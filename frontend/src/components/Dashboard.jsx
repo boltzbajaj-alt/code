@@ -21,6 +21,25 @@ export default function Dashboard() {
     });
   }, [isLoaded, user]);
 
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+
+    const checkProfile = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/user/${user.id}/profile`
+        );
+        if (!response.data?.profileCompleted) {
+          navigate("/complete-profile");
+        }
+      } catch (err) {
+        // Keep user on dashboard if profile check fails
+      }
+    };
+
+    checkProfile();
+  }, [isLoaded, user, navigate]);
+
   // Static data
   const stats = {
     totalQuestions: 150,
@@ -53,86 +72,90 @@ export default function Dashboard() {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="flex">
-          {/* Sidebar */}
-          <aside
-            className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-gray-200 bg-white shadow-xl transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-              }`}
-          >
-            <div className="flex h-full flex-col">
-              {/* Sidebar Header */}
-              <div className="flex items-center justify-between border-b border-gray-100 p-6">
-                <div className="flex items-center gap-3">
-                  <img src="/logo.png" alt="CodeTrack logo" className="h-10 w-12" />
-                  <div>
-                    <h1 className="lg:text-2xl text-xl font-bold text-gray-900">CodeTrack</h1>
-                    <p className="text-sm text-gray-500">Dashboard</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  className=" rounded-lg p-2 hover:bg-gray-100 lg:hidden"
-                >
-                  <CircleX  size={20} className="text-gray-600" />
-                </button>
-              </div>
-
-              {/* Sidebar Menu */}
-              <nav className="flex-1 space-y-1 p-4">
-                <button onClick={() => navigate("/")} className="flex w-full items-center gap-3 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 text-left transition-all hover:from-blue-100 hover:to-blue-200">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500">
-                    <LayoutDashboard size={18} className="text-white" />
-                  </div>
-                  <span className="font-semibold text-blue-700">Dashboard</span>
-                </button>
-                <Link
-                  to="/profile"
-                  className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left font-medium text-gray-700 transition-all hover:bg-gray-100"
-                >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-200">
-                    <User size={18} className="text-gray-600" />
-                  </div>
-                  <span className="font-medium text-gray-700">Profile</span>
-                </Link>
-              </nav>
-
-              {/* Divider */}
-              <div>
-                <div className="p-4">
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <div className="flex items-center gap-3">
-                      <UserButton />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
-                          {user?.firstName || "User"}
-                        </p>
-                        <p className="text-xs text-gray-500">Free Plan</p>
-                      </div>
-                      <ChevronRight size={16} className="text-gray-400" />
+      <div className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-sm lg:hidden">
+                <div className="flex items-center justify-between p-4">
+                    <button
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="rounded-lg p-2 hover:bg-gray-100"
+                    >
+                        <Menu size={24} className="text-gray-700" />
+                    </button>
+                    <div className="flex items-center gap-2">
+                        <img src="/logo.png" alt="CodeTrack" className="h-8 w-8" />
+                        <span className="font-bold text-gray-900">CodeTrack</span>
                     </div>
-                  </div>
+                    <UserButton />
                 </div>
-              </div>
-
-              {/* Logout Button */}
-              <div className="border-t border-gray-200 px-4 py-2">
-                <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left font-medium text-gray-700 transition-all hover:bg-red-50 hover:text-red-600">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-                    <LogOut size={18} className="text-gray-600 group-hover:text-red-600" />
-                  </div>
-                  <span className="font-medium">Logout</span>
-                </button>
-              </div>
             </div>
-          </aside>
 
-          {/* Overlay for mobile */}
-          {isSidebarOpen && (
-            <div
-              className="fixed inset-0 z-40  bg-opacity-50 lg:hidden"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-          )}
+            <div className="flex">
+                {/* Sidebar - Simpler Design */}
+                <aside
+                    className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-gray-200 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                        }`}
+                >
+                    <div className="flex h-full flex-col p-4">
+                        {/* Logo */}
+                        <div className="mb-8 flex items-center gap-3 px-2">
+                            <img src="/logo.png" alt="CodeTrack" className="h-10 w-10" />
+                            <div>
+                                <h1 className="text-xl font-bold text-gray-900">CodeTrack</h1>
+                                <p className="text-xs text-gray-500">by students, for students</p>
+                            </div>
+                            <button
+                                onClick={() => setIsSidebarOpen(false)}
+                                className="ml-auto rounded-lg p-1 hover:bg-gray-100 lg:hidden"
+                            >
+                                <CircleX size={18} className="text-gray-600" />
+                            </button>
+                        </div>
+
+                        {/* Navigation */}
+                        <nav className="space-y-2 cursor-pointer">
+                            <button
+                                onClick={() => navigate("/")}
+                                className="cursor-pointer flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100 bg-blue-50 font-medium text-blue-700"
+                            >
+                                <LayoutDashboard size={20} className="text-blue-600" />
+                                <span className="font-medium text-gray-700">Dashboard</span>
+                            </button>
+                            <button
+                                onClick={() => navigate("/profile")}
+                                className="cursor-pointer flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100"
+                            >
+                                <User size={20} className="text-gray-600" />
+                                <span>Profile</span>
+                            </button>
+                        </nav>
+
+                        {/* User Info */}
+                        <div className="mt-auto border-t border-gray-200 pt-4">
+                            <div className="rounded-lg border border-gray-200 p-3">
+                                <div className="flex items-center gap-3">
+                                    <UserButton />
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900">
+                                            {user?.fullName || "Coder"}
+                                        </p>
+                                        <p className="text-xs text-gray-500">Free Plan</p>
+                                    </div>
+                                </div>
+                                <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    <LogOut size={16} />
+                                    Sign Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                {/* Overlay for mobile */}
+                {isSidebarOpen && (
+                    <div
+                        className="fixed inset-0 z-30 bg-black/20 lg:hidden"
+                        onClick={() => setIsSidebarOpen(false)}
+                    />
+                )}
 
           {/* Main Content */}
           <main className="flex-1">
