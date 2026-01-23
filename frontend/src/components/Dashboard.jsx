@@ -1,4 +1,4 @@
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { Menu, LogOut, User,CircleX , LayoutDashboard, Search, Plus, Star, Chevr
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const synced = useRef(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -99,7 +100,7 @@ export default function Dashboard() {
                         <div className="mb-8 flex items-center gap-3 px-2">
                             <img src="/logo.png" alt="CodeTrack" className="h-10 w-10" />
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900">CodeTrack</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">CodeTrack</h1>
                                 <p className="text-xs text-gray-500">by students, for students</p>
                             </div>
                             <button
@@ -111,13 +112,13 @@ export default function Dashboard() {
                         </div>
 
                         {/* Navigation */}
-                        <nav className="space-y-2 cursor-pointer">
+                        <nav className="space-y-2 border-t border-gray-200">
                             <button
                                 onClick={() => navigate("/")}
-                                className="cursor-pointer flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100 bg-blue-50 font-medium text-blue-700"
+                                className="mt-3 cursor-pointer flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100 bg-blue-50 font-medium text-blue-700"
                             >
                                 <LayoutDashboard size={20} className="text-blue-600" />
-                                <span className="font-medium text-gray-700">Dashboard</span>
+                                <span className="font-semibold text-blue-700">Dashboard</span>
                             </button>
                             <button
                                 onClick={() => navigate("/profile")}
@@ -140,7 +141,10 @@ export default function Dashboard() {
                                         <p className="text-xs text-gray-500">Free Plan</p>
                                     </div>
                                 </div>
-                                <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                <button
+                                    onClick={() => signOut({ redirectUrl: "/" })}
+                                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
                                     <LogOut size={16} />
                                     Sign Out
                                 </button>

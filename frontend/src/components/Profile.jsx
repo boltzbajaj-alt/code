@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserButton, useUser } from "@clerk/clerk-react";
+import { UserButton, useClerk, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import platforms from "../../data/platform";
 import {
@@ -29,9 +29,12 @@ import {
 export default function Profile() {
     const navigate = useNavigate();
     const { user, isLoaded } = useUser();
+    const { signOut } = useClerk();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+    const [isPlansOpen, setIsPlansOpen] = useState(false);
     const [error, setError] = useState("");
     const [profileData, setProfileData] = useState({
         email: "",
@@ -75,10 +78,10 @@ export default function Profile() {
     const currentYear = new Date().getFullYear();
 
     const yearOptions = Array.from(
-      { length: 7 },
-      (_, i) => (currentYear - 3 + i).toString()
+        { length: 7 },
+        (_, i) => (currentYear - 3 + i).toString()
     );
-    
+
     const countryOptions = ["India", "United States", "Canada", "United Kingdom", "Australia", "Germany", "Other"];
     const collegeOptions = [
         "IIT Delhi",
@@ -93,6 +96,20 @@ export default function Profile() {
         "Local College",
         "Other",
     ];
+
+    const stats = {
+        easy: { solved: 177, color: "text-teal-500" },
+        medium: { solved: 388,color: "text-yellow-500" },
+        hard: { solved: 84,color: "text-red-500" },
+    };
+
+
+    const totalSolved = 649;
+    const radius = 60;
+    const stroke = 8;
+    const circumference = 2 * Math.PI * radius;
+    const offset = 1;
+
 
     useEffect(() => {
         if (!isLoaded || !user) return;
@@ -185,7 +202,7 @@ export default function Profile() {
                 <div className="flex items-center justify-between p-4">
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="rounded-lg p-2 hover:bg-gray-100"
+                        className="cursor-pointer rounded-lg p-2 hover:bg-gray-100"
                     >
                         <Menu size={24} className="text-gray-700" />
                     </button>
@@ -208,7 +225,7 @@ export default function Profile() {
                         <div className="mb-8 flex items-center gap-3 px-2">
                             <img src="/logo.png" alt="CodeTrack" className="h-10 w-10" />
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900">CodeTrack</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">CodeTrack</h1>
                                 <p className="text-xs text-gray-500">by students, for students</p>
                             </div>
                             <button
@@ -220,17 +237,17 @@ export default function Profile() {
                         </div>
 
                         {/* Navigation */}
-                        <nav className="space-y-2">
+                        <nav className="space-y-2 border-t border-gray-200">
                             <button
                                 onClick={() => navigate("/")}
-                                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100"
+                                className="mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100 cursor-pointer"
                             >
                                 <LayoutDashboard size={20} className="text-gray-600" />
                                 <span className="font-medium text-gray-700">Dashboard</span>
                             </button>
                             <button
                                 onClick={() => navigate("/profile")}
-                                className="flex w-full items-center gap-3 rounded-lg bg-blue-50 px-3 py-2.5 text-left font-medium text-blue-700"
+                                className="mt-3 flex w-full items-center gap-3 font-semibold rounded-lg bg-blue-50 px-3 py-2.5 text-left font-medium text-blue-700 cursor-pointer"
                             >
                                 <User size={20} className="text-blue-600" />
                                 <span>Profile</span>
@@ -249,7 +266,10 @@ export default function Profile() {
                                         <p className="text-xs text-gray-500">Free Plan</p>
                                     </div>
                                 </div>
-                                <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                <button
+                                    onClick={() => signOut({ redirectUrl: "/" })}
+                                    className="cursor-pointer mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                >
                                     <LogOut size={16} />
                                     Sign Out
                                 </button>
@@ -275,13 +295,23 @@ export default function Profile() {
                                 <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">My Profile</h1>
                                 <p className="mt-1 text-gray-600">Customize your learning journey</p>
                             </div>
-                            <button
-                                onClick={() => setIsEditing(!isEditing)}
-                                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-700 hover:bg-gray-50"
-                            >
-                                <Pencil size={18} />
-                                {isEditing ? "Cancel Editing" : "Edit Profile"}
-                            </button>
+                            <div className="flex flex-wrap gap-3">
+                                <button
+                                    onClick={() => setIsSubscriptionOpen(true)}
+                                    className="rounded-lg cursor-pointer bg-yellow-600 px-4 py-2.5 font-medium text-white shadow-sm transition hover:bg-yellow-700"
+                                >
+                                    Manage Subscription
+                                </button>
+                                <button
+                                    onClick={() => setIsEditing(!isEditing)}
+                                    className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                    <Pencil size={18} />
+                                    {isEditing ? "Cancel Editing" : "Edit Profile"}
+                                </button>
+
+                                
+                            </div>
                         </div>
 
                         {error && (
@@ -292,59 +322,107 @@ export default function Profile() {
                     </div>
 
                     {/* Profile Card */}
-                    <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                        <div className="flex flex-col items-center gap-6 md:flex-row">
-                            {/* Profile Image */}
-                            <div className="relative">
-                                <img
-                                    src={profileData.image || user?.imageUrl || "/logo.png"}
-                                    alt="Profile"
-                                    className="h-32 w-32 rounded-full border-4 border-white shadow-lg"
-                                />
-                                {isEditing && (
-                                    <button className="absolute bottom-0 right-0 rounded-full bg-blue-500 p-2 text-white shadow-lg">
-                                        <Pencil size={16} />
-                                    </button>
-                                )}
-                            </div>
+                    <div className="mb-8 rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:p-6">
+                        <div className="flex flex-col gap-8 lg:flex-row">
+                            {/* LEFT: Profile Info */}
+                            <div className="flex-1">
+                                <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
+                                    {/* Profile Image */}
+                                    <div className="relative">
+                                        <img
+                                            src={profileData.image || user?.imageUrl || "/logo.png"}
+                                            alt="Profile"
+                                            className="h-28 w-28 rounded-full border-4 border-white shadow-lg sm:h-30 sm:w-30"
+                                        />
+                                        {isEditing && (
+                                            <button className="absolute -bottom-1 -right-1 rounded-full bg-blue-500 p-2 text-white shadow-lg">
+                                                <Pencil size={16} />
+                                            </button>
+                                        )}
+                                    </div>
 
-                            {/* Profile Info */}
-                            <div className="flex-1 text-center md:text-left">
-                                <div className="mb-3">
-                                    <h2 className="text-2xl font-bold text-gray-900">
-                                        {user?.fullName || "Student Coder"}
-                                    </h2>
-                                    <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:justify-start">
-                                        <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
-                                            @{profileData.username || "coder123"}
-                                        </span>
-                                        <span className="text-gray-400">•</span>
-                                        <span className="text-gray-600">
-                                            {profileData.email || user?.primaryEmailAddress?.emailAddress || "student@email.com"}
-                                        </span>
+                                    {/* Profile Text */}
+                                    <div className="text-center md:text-left">
+                                        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
+                                            {user?.fullName || "Student Coder"}
+                                        </h2>
+
+                                        <div className="mt-2 flex flex-wrap justify-center gap-2 md:justify-start md:gap-3">
+                                            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+                                                @{profileData.username || "coder123"}
+                                            </span>
+                                            <span className="text-sm text-gray-600 sm:text-base">
+                                                {profileData.email || user?.primaryEmailAddress?.emailAddress}
+                                            </span>
+                                        </div>
+
+                                        <div className="mt-3 flex flex-col items-center gap-1 sm:gap-2 md:items-start">
+                                            <p className="text-gray-700">
+                                                <GraduationCap size={16} className="mr-2 inline" />
+                                                {profileData.salutation || "Aspiring Developer"}
+                                            </p>
+
+                                            <p className="text-sm text-gray-500">
+                                                <Building size={16} className="mr-2 inline" />
+                                                {profileData.collegeName || "Student"}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                                <p className="text-gray-700">
-                                    <GraduationCap size={16} className="mr-2 inline" />
-                                    {profileData.salutation || "Aspiring Developer"}
-                                </p>
-                                <p className="mt-2 text-sm text-gray-500">
-                                    <Building size={16} className="mr-2 inline" />
-                                    {profileData.collegeName || "Student"}
-                                </p>
                             </div>
 
-                            {/* Save Button */}
-                            {isEditing && (
-                                <button
-                                    onClick={handleSave}
-                                    disabled={isSaving}
-                                    className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-70"
-                                >
-                                    <Save size={18} />
-                                    {isSaving ? "Saving..." : "Save Changes"}
-                                </button>
-                            )}
+                            {/* RIGHT: Progress Stats */}
+                            <div className="flex w-full items-center justify-center rounded-xl bg-gray-900 p-4 text-white lg:w-80 lg:justify-between lg:mr-8">
+                                <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
+                                    {/* Circular Progress */}
+                                    <div className="relative shrink-0">
+                                        <svg width="120" height="120" className="sm:w-[130px] sm:h-[130px]">
+                                            <circle
+                                                cx="60"
+                                                cy="60"
+                                                r={radius * 0.8}
+                                                stroke="#2a2a2a"
+                                                strokeWidth={stroke}
+                                                fill="transparent"
+                                            />
+                                            <circle
+                                                cx="60"
+                                                cy="60"
+                                                r={radius * 0.8}
+                                                stroke="#22c55e"
+                                                strokeWidth={stroke}
+                                                fill="transparent"
+                                                strokeDasharray={circumference * 0.8}
+                                                strokeDashoffset={offset * 0.8}
+                                                strokeLinecap="round"
+                                                transform="rotate(-90 60 60)"
+                                            />
+                                        </svg>
+
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                            <p className="text-2xl font-bold sm:text-3xl mr-2">{totalSolved}</p>
+                                            <p className="text-xs text-gray-400 mr-3">questions</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Difficulty Stats */}
+                                    <div className="w-full min-w-[180px] space-y-2 sm:w-auto">
+                                        {Object.entries(stats).map(([key, value]) => (
+                                            <div
+                                                key={key}
+                                                className="flex items-center justify-between rounded-lg bg-gray-800 px-3 py-2 text-sm"
+                                            >
+                                                <span className={`font-medium capitalize ${value.color}`}>
+                                                    {key}
+                                                </span>
+                                                <span className="text-gray-300">
+                                                    {value.solved}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -400,7 +478,7 @@ export default function Profile() {
                                                 <button
                                                     key={option}
                                                     onClick={() => handleArrayToggle("primaryGoal", option)}
-                                                    className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${profileData.primaryGoal.includes(option)
+                                                    className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${profileData.primaryGoal.includes(option)
                                                         ? "bg-blue-100 text-blue-700 border border-blue-200"
                                                         : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                                                         }`}
@@ -435,7 +513,7 @@ export default function Profile() {
                                                 <button
                                                     key={lang}
                                                     onClick={() => handleArrayToggle("preferredCodingLanguage", lang)}
-                                                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${profileData.preferredCodingLanguage.includes(lang)
+                                                    className={`cursor-pointer rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${profileData.preferredCodingLanguage.includes(lang)
                                                         ? "bg-blue-100 text-blue-700 border border-purple-200"
                                                         : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                                                         }`}
@@ -482,7 +560,7 @@ export default function Profile() {
                                                 <button
                                                     key={platform}
                                                     onClick={() => handleArrayToggle("targetPlatform", platform)}
-                                                    className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${profileData.targetPlatform.includes(platform)
+                                                    className={`cursor-pointer flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${profileData.targetPlatform.includes(platform)
                                                         ? "bg-blue-100 text-blue-700 "
                                                         : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                                                         }`}
@@ -520,7 +598,7 @@ export default function Profile() {
                                                 <button
                                                     key={hours}
                                                     onClick={() => setProfileData(prev => ({ ...prev, dailyPractice: hours }))}
-                                                    className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-colors ${profileData.dailyPractice === hours
+                                                    className={`cursor-pointer flex-1 rounded-lg py-2.5 text-sm font-medium transition-colors ${profileData.dailyPractice === hours
                                                         ? "border border-blue-600 bg-blue-50 text-black"
                                                         : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                                                         }`}
@@ -530,7 +608,7 @@ export default function Profile() {
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="rounded-lg p-4">
+                                        <div className="rounded-lg px-4">
                                             <p className="text-3xl font-bold ">
                                                 {profileData.dailyPractice || "0"} hour{profileData.dailyPractice !== "1" ? "s" : ""}
                                             </p>
@@ -566,6 +644,7 @@ export default function Profile() {
                                         </label>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
 
@@ -677,10 +756,179 @@ export default function Profile() {
                                     </div>
                                 ))}
                             </div>
+
+
                         </div>
                     </div>
 
-                    
+                    {isEditing && (
+                        <button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className="cursor-pointer mt-4 flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-70"
+                        >
+                            <Save size={18} />
+                            {isSaving ? "Saving..." : "Save Changes"}
+                        </button>
+                    )}
+
+                    {isSubscriptionOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+                            <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl md:p-8">
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 md:text-2xl">
+                                            Manage Subscription
+                                        </h3>
+                                        <p className="mt-2 text-sm text-gray-600">
+                                            Upgrade, downgrade, or cancel your plan anytime.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsSubscriptionOpen(false)}
+                                        className="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+                                    >
+                                        <CircleX size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+                                        <h4 className="text-sm font-semibold text-blue-700">Current Plan</h4>
+                                        <p className="mt-2 text-lg font-bold text-blue-900">Free</p>
+                                        <p className="mt-1 text-sm text-blue-700">
+                                            Access core tracking features.
+                                        </p>
+                                    </div>
+                                    <div className="rounded-xl border border-gray-200 bg-white p-4">
+                                        <h4 className="text-sm font-semibold text-gray-700">Upgrade Options</h4>
+                                        <p className="mt-2 text-sm text-gray-600">
+                                            Unlock premium insights and smart reminders.
+                                        </p>
+                                <button
+                                    onClick={() => setIsPlansOpen(true)}
+                                    className="cursor-pointer mt-4 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                                >
+                                            Explore Plans
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                                    <button
+                                        onClick={() => setIsSubscriptionOpen(false)}
+                                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    >
+                                        Close
+                                    </button>
+                                    <button className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                                        Manage Billing
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPlansOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+                            <div className="w-full max-w-6xl rounded-2xl bg-white p-6 shadow-2xl md:p-8">
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <h3 className="text-2xl font-bold md:text-3xl">Plans</h3>
+                                        <p className="mt-2 text-sm ">
+                                            Choose the plan that fits your coding journey.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsPlansOpen(false)}
+                                        className="cursor-pointer rounded-lg p-2 "
+                                    >
+                                        <CircleX size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                                    <div className="flex h-full flex-col rounded-xl  bg-blue-50 border border-blue-600 p-5 text-blue-600">
+                                        <div>
+                                            <h4 className="text-lg font-semibold">Hobby</h4>
+                                            <p className="text-sm t">Free</p>
+                                        </div>
+                                        <p className="mt-4 text-sm ">Includes:</p>
+                                        <ul className="mt-3 space-y-2 text-sm">
+                                            <li>✓ Track up to 50 questions</li>
+                                            <li>✓ Basic confidence insights</li>
+                                            <li>✓ Manual revision reminders</li>
+                                        </ul>
+                                        <button className="cursor-pointer mt-6 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600/20">
+                                            Get Started
+                                        </button>
+                                    </div>
+
+                                    <div className="flex h-full flex-col rounded-xl border border-gray-500 bg-white p-5 text-gray-700">
+                                        <div>
+                                            <h4 className="text-lg font-semibold text-black">Pro</h4>
+                                            <p className="text-sm text-black">$9/mo.</p>
+                                        </div>
+                                        <p className="mt-4 text-sm text-black">Everything in Hobby, plus:</p>
+                                        <ul className="mt-3 space-y-2 text-sm">
+                                            <li>✓ Unlimited questions</li>
+                                            <li>✓ Smart confidence scoring</li>
+                                            <li>✓ Weekly revision nudges</li>
+                                        </ul>
+                                        <button className="cursor-pointer mt-6 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600/90">
+                                            Get Pro
+                                        </button>
+                                    </div>
+
+                                    <div className="flex h-full flex-col rounded-xl  bg-blue-50 border border-blue-600 p-5 text-blue-600">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="text-lg font-semibold">Pro+</h4>
+                                            <span className="text-xs font-semibold text-orange-400">
+                                                Recommended
+                                            </span>
+                                        </div>
+                                        <p className="text-sm ">$19/mo.</p>
+                                        <p className="mt-4 text-sm ">Everything in Pro, plus:</p>
+                                        <ul className="mt-3 space-y-2 text-sm">
+                                            <li>✓ AI-guided revision plan</li>
+                                            <li>✓ Topic strength dashboard</li>
+                                            <li>✓ Priority email reminders</li>
+                                        </ul>
+                                        <button className="cursor-pointer mt-6 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600/90">
+                                            Get Pro+
+                                        </button>
+                                    </div>
+
+                                    <div className="flex h-full flex-col rounded-xl border border-gray-500 bg-white p-5 text-gray-700">
+                                        <div>
+                                            <h4 className="text-lg font-semibold text-black">Ultra</h4>
+                                            <p className="text-sm text-black">$39/mo.</p>
+                                        </div>
+                                        <p className="mt-4 text-sm text-black">Everything in Pro+, plus:</p>
+                                        <ul className="mt-3 space-y-2 text-sm">
+                                            <li>✓ 1:1 mentor review sessions</li>
+                                            <li>✓ Daily revision scheduling</li>
+                                            <li>✓ Early access to new features</li>
+                                        </ul>
+                                        <button className="mt-6 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600/90">
+                                            Get Ultra
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 flex justify-end">
+                                    <button
+                                        onClick={() => setIsPlansOpen(false)}
+                                        className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+
                 </main>
             </div>
         </div>
