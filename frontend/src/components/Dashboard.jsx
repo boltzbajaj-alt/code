@@ -33,7 +33,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!isLoaded || !user || synced.current) return;
     synced.current = true;
-    axios.post("http://localhost:5000/api/user/sync", {
+    axios.post("https://code-backend-qokt.onrender.com/api/user/sync", {
       clerkUserId: user.id,
       email: user.primaryEmailAddress.emailAddress,
       username: user.username || user.firstName,
@@ -49,7 +49,7 @@ export default function Dashboard() {
     const checkProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/user/${user.id}/profile`
+          `https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`
         );
         if (!response.data?.profileCompleted) {
           navigate("/complete-profile");
@@ -98,14 +98,14 @@ export default function Dashboard() {
       try {
         // Fetch questions
         const questionsResponse = await axios.get(
-          `http://localhost:5000/api/question/user/${userId}`,
+          `https://code-backend-qokt.onrender.com/api/question/user/${userId}`,
           { timeout: 10000 }
         );
         setQuestions(questionsResponse.data || []);
 
         // Fetch dashboard stats
         const statsResponse = await axios.get(
-          `http://localhost:5000/api/user/${user.id}/dashboard`,
+          `https://code-backend-qokt.onrender.com/api/user/${user.id}/dashboard`,
           { timeout: 10000 }
         );
         setStats({
@@ -141,7 +141,7 @@ export default function Dashboard() {
     setPreviewData(null);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/question/preview-leetcode", {
+      const response = await axios.post("https://code-backend-qokt.onrender.com/api/question/preview-leetcode", {
         input: formData.leetcodeInput,
       });
 
@@ -219,12 +219,12 @@ export default function Dashboard() {
         if (userId && user) {
           try {
             const questionsResponse = await axios.get(
-              `http://localhost:5000/api/question/user/${userId}`
+              `https://code-backend-qokt.onrender.com/api/question/user/${userId}`
             );
             setQuestions(questionsResponse.data || []);
 
             const statsResponse = await axios.get(
-              `http://localhost:5000/api/user/${user.id}/dashboard`
+              `https://code-backend-qokt.onrender.com/api/user/${user.id}/dashboard`
             );
             setStats({
               totalQuestions: statsResponse.data.totalQuestions || 0,
