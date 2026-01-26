@@ -47,7 +47,7 @@ const CompanyWise = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/company-sheets");
+        const response = await axios.get("https://code-backend-qokt.onrender.com/api/company-sheets");
         setCompanies(response.data || []);
         
       } catch (err) {
@@ -116,7 +116,7 @@ const CompanyWise = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/company-sheets/${company._id}`
+        `https://code-backend-qokt.onrender.com/api/company-sheets/${company._id}`
       );
       const fetchedQuestions = response.data?.questions || [];
       setQuestions(fetchedQuestions);
@@ -125,7 +125,7 @@ const CompanyWise = () => {
         fetchedQuestions.map(async (item) => {
           try {
             const metaResponse = await axios.post(
-              "http://localhost:5000/api/question/preview-leetcode",
+              "https://code-backend-qokt.onrender.com/api/question/preview-leetcode",
               { input: item.title }
             );
             return [item.title, metaResponse.data];
@@ -138,7 +138,7 @@ const CompanyWise = () => {
       setQuestionMeta(Object.fromEntries(metadataEntries));
       if (user?.id) {
         const progressResponse = await axios.get(
-          `http://localhost:5000/api/company-sheets/${company._id}/progress`,
+          `https://code-backend-qokt.onrender.com/api/company-sheets/${company._id}/progress`,
           { params: { clerkUserId: user.id } }
         );
         const completedMap = (progressResponse.data?.completed || []).reduce(
@@ -161,7 +161,7 @@ const CompanyWise = () => {
 
     try {
       const metaRes = await axios.post(
-        "http://localhost:5000/api/question/preview-leetcode",
+        "https://code-backend-qokt.onrender.com/api/question/preview-leetcode",
         { input: questionTitle }
       );
       setQuestionDetails(metaRes.data);
@@ -199,7 +199,7 @@ const CompanyWise = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/company-sheets/${selectedCompany._id}/progress`,
+        `https://code-backend-qokt.onrender.com/api/company-sheets/${selectedCompany._id}/progress`,
         {
           clerkUserId: user.id,
           questionTitle: title,
