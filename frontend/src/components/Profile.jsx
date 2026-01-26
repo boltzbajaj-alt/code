@@ -142,7 +142,7 @@ export default function Profile() {
     const markOnboardingSeen = async () => {
         if (!user) return;
         try {
-            await axios.patch(`http://localhost:5000/api/user/${user.id}/new-user`, {
+            await axios.patch(`https://code-backend-qokt.onrender.com/api/user/${user.id}/new-user`, {
                 new_user: false,
             });
             setProfileData((prev) => ({ ...prev, new_user: false }));
@@ -157,7 +157,7 @@ export default function Profile() {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:5000/api/user/${user.id}/profile`
+                    `https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`
                 );
                 if (response.data) {
                     setProfileData((prev) => ({
@@ -232,7 +232,7 @@ export default function Profile() {
         const fetchData = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:5000/api/user/${user.id}/leetcode`
+                    `https://code-backend-qokt.onrender.com/api/user/${user.id}/leetcode`
                 );
                 if (response.data && response.data.leetcodeStats) {
                     setLeetcodeData({
@@ -255,7 +255,7 @@ export default function Profile() {
 
         try {
             const response = await axios.get(
-                `http://localhost:5000/api/user/${user.id}/leetcode`
+                `https://code-backend-qokt.onrender.com/api/user/${user.id}/leetcode`
             );
             if (response.data && response.data.leetcodeStats) {
                 setLeetcodeData({
@@ -280,7 +280,7 @@ export default function Profile() {
 
         try {
             const response = await axios.post(
-                `http://localhost:5000/api/user/${user.id}/leetcode/sync`,
+                `https://code-backend-qokt.onrender.com/api/user/${user.id}/leetcode/sync`,
                 { leetcodeUsername: profileData.leetcodeUsername }
             );
 
@@ -359,7 +359,7 @@ export default function Profile() {
         setError("");
 
         try {
-            await axios.put(`http://localhost:5000/api/user/${user.id}/profile`, {
+            await axios.put(`https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`, {
                 username: profileData.username,
                 salutation: profileData.salutation,
                 degree: profileData.degree,
