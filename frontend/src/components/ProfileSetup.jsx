@@ -70,7 +70,7 @@ const ProfileSetup = () => {
     const checkProfile = async () => {
       try {
         if (user.primaryEmailAddress?.emailAddress) {
-          await axios.post("http://localhost:5000/api/user/sync", {
+          await axios.post("https://code-backend-qokt.onrender.com/api/user/sync", {
             clerkUserId: user.id,
             email: user.primaryEmailAddress.emailAddress,
             username: user.username || user.firstName || user.id,
@@ -79,7 +79,7 @@ const ProfileSetup = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:5000/api/user/${user.id}/profile`
+          `https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`
         );
         if (response.data?.profileCompleted) {
           navigate("/");
@@ -130,7 +130,7 @@ const ProfileSetup = () => {
     try {
       try {
         await axios.put(
-          `http://localhost:5000/api/user/${user.id}/profile`,
+          `https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`,
           {
             ...formData,
             yearOfGraduation: Number(formData.yearOfGraduation),
@@ -139,7 +139,7 @@ const ProfileSetup = () => {
       } catch (err) {
         if (err?.response?.status === 404) {
           if (user.primaryEmailAddress?.emailAddress) {
-            await axios.post("http://localhost:5000/api/user/sync", {
+            await axios.post("https://code-backend-qokt.onrender.com/api/user/sync", {
               clerkUserId: user.id,
               email: user.primaryEmailAddress.emailAddress,
               username: user.username || user.firstName || user.id,
@@ -147,7 +147,7 @@ const ProfileSetup = () => {
             });
           }
           await axios.put(
-            `http://localhost:5000/api/user/${user.id}/profile`,
+            `https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`,
             {
               ...formData,
               yearOfGraduation: Number(formData.yearOfGraduation),

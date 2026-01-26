@@ -42,7 +42,7 @@ export default function TodaysPlan() {
     if (!isLoaded || !user) return;
     const fetchUserId = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/profile`);
+        const response = await axios.get(`https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`);
         if (response.data && response.data._id) {
           setUserId(response.data._id);
         }
@@ -61,7 +61,7 @@ export default function TodaysPlan() {
     const fetchTodayPlan = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`http://localhost:5000/api/today/${userId}`, {
+        const response = await axios.get(`https://code-backend-qokt.onrender.com/api/today/${userId}`, {
           timeout: 10000,
         });
         setTodayPlan(response.data);
@@ -82,7 +82,7 @@ export default function TodaysPlan() {
     const fetchPOTD = async () => {
       setIsLoadingPotd(true);
       try {
-        const response = await axios.get("http://localhost:5000/api/question/potd", {
+        const response = await axios.get("https://code-backend-qokt.onrender.com/api/question/potd", {
           timeout: 10000, // 10 second timeout
         });
         if (response.data && response.data.title && !response.data.error) {
@@ -108,14 +108,14 @@ export default function TodaysPlan() {
 
     setIsSubmitting(true);
     try {
-      await axios.post(`http://localhost:5000/api/today/${userId}/mark-revised`, {
+      await axios.post(`https://code-backend-qokt.onrender.com/api/today/${userId}/mark-revised`, {
         questionId: selectedQuestion._id,
         confidenceLevel: reviseForm.confidenceLevel,
         wayOfSolving: reviseForm.wayOfSolving,
       });
 
       // Refresh today's plan
-      const response = await axios.get(`http://localhost:5000/api/today/${userId}`);
+      const response = await axios.get(`https://code-backend-qokt.onrender.com/api/today/${userId}`);
       setTodayPlan(response.data);
 
       setIsReviseModalOpen(false);

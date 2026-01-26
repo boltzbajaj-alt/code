@@ -77,7 +77,7 @@ export default function Dashboard() {
     if (!isLoaded || !user) return;
     const fetchUserId = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${user.id}/profile`);
+        const response = await axios.get(`https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`);
         if (response.data && response.data._id) {
           setUserId(response.data._id);
         }
@@ -188,7 +188,7 @@ export default function Dashboard() {
       };
 
       try {
-        await axios.post("http://localhost:5000/api/question/add-smart", payload);
+        await axios.post("https://code-backend-qokt.onrender.com/api/question/add-smart", payload);
         setSuccess(true);
       } catch (err) {
         if (err.response?.status === 409) {

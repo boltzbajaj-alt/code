@@ -298,7 +298,7 @@ export default function Profile() {
 
             // Also save the username to the backend profile
             try {
-                await axios.put(`http://localhost:5000/api/user/${user.id}/profile`, {
+                await axios.put(`https://code-backend-qokt.onrender.com/api/user/${user.id}/profile`, {
                     username: profileData.username,
                     salutation: profileData.salutation,
                     degree: profileData.degree,
