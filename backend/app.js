@@ -8,7 +8,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors("https://code-3tx7.onrender.com"));
+app.use(cors("https://code-rho-five.vercel.app/"));
 app.use(express.json());
 
 // Health check endpoint
